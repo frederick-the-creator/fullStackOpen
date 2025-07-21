@@ -3,7 +3,16 @@ import { useState } from 'react'
 
 const Header = ({text}) => <h1>{text}</h1>
 const Button = ({text, onClick}) => <button onClick={onClick}>{text}</button>
-const StatisticsLine = ({text, value, special}) => <div>{text} {value} {special}</div>
+const StatisticsRow = ({text, value, special}) => {
+  return(
+    <tr>
+      <td>{text}</td>
+      <td>{value}</td>
+      <td>{special}</td>
+    </tr>
+  )
+}
+
 const AllStatisticsLine = ({good, neutral, bad, all, average, positive}) => {
   if (all===0) {
     return (
@@ -12,14 +21,14 @@ const AllStatisticsLine = ({good, neutral, bad, all, average, positive}) => {
   }
 
   return(
-    <>
-      <StatisticsLine text='good' value={good}/>
-      <StatisticsLine text='neutral' value={neutral}/>
-      <StatisticsLine text='bad' value={bad}/>
-      <StatisticsLine text='all' value={all}/>
-      <StatisticsLine text='average' value={average}/>
-      <StatisticsLine text='positive' value={positive} special='%'/>
-    </>
+      <table>
+        <StatisticsRow text="good" value={good}/>
+        <StatisticsRow text="neutral" value={neutral}/>
+        <StatisticsRow text="bad" value={bad}/>
+        <StatisticsRow text="all" value={all}/>
+        <StatisticsRow text="average" value={average}/>
+        <StatisticsRow text="positive" value={positive} special="%"/>
+      </table>
     )
   }
 
