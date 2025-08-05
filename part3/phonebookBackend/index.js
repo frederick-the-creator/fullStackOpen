@@ -110,17 +110,19 @@ app.put('/api/persons/:id', (request, response, next) => {
     .catch(error => next(error))
 })
 
-// Nested promises
-// Using return within promise callback
+// app.post route contains conditional that we can move to the data validation?
 
 const errorHandler = (error, request, response, next) => {
-    console.log('error:',error.message)
-    // next(error)
+    console.log('error:',error.name)
+    if (error.name === 'ValidationError') {
+        return response.status(400).json({error: error.message})
+    }
+    next(error)
 }
 
 app.use(errorHandler)
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {
-    console.log("Server is up an running, Baby!")
+    console.log("Server is up an running, Baby! Listening on PORT:", PORT)
 })
