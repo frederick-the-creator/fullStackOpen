@@ -17,47 +17,48 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms :r
 
 app.get('/info', (request, response) => {
     const date = new Date()
+
     Person
-    .find({})
-    .then(result => {
-    response.send(
-        `<div>Phonebook has info for ${result.length} people</div>
-         <div>${date.toString()}<div/>
-        `
-    )})
+        .find({})
+        .then(result => {
+            response.send(
+                `<div>Phonebook has info for ${result.length} people</div>
+                <div>${date.toString()}<div/>
+                `
+            )})
 })
 
 app.get('/api/persons', (request, response, next) => {
 
     Person
-    .find({})
-    .then(result => {
-        response.json(result)
-    })
-    .catch(error => {
-        next(error)
-    })
+        .find({})
+        .then(result => {
+            response.json(result)
+        })
+        .catch(error => {
+            next(error)
+        })
 
 })
 
 app.get('/api/persons/:id', (request, response, next) => {
     const id = request.params.id
     Person
-    .findById(id)
-    .then(result => {
-        response.status(200).json(result)
-    })
-    .catch(error => next(error))
+        .findById(id)
+        .then(result => {
+            response.status(200).json(result)
+        })
+        .catch(error => next(error))
 })
 
 app.delete('/api/persons/:id', (request, response, next) => {
     const id = request.params.id
     Person
-    .findByIdAndDelete(id)
-    .then(result => {
-        response.status(204).end()
-    })
-    .catch(error => next(error))
+        .findByIdAndDelete(id)
+        .then(() => {
+            response.status(204).end()
+        })
+        .catch(error => next(error))
 
 })
 
@@ -67,7 +68,7 @@ app.post('/api/persons', (request, response, next) => {
 
     if (!body.name || !body.number) {
         return response.status(404).json({
-            error: "Either name or number is missing"
+            error: 'Either name or number is missing'
         })
     }
 
@@ -77,37 +78,37 @@ app.post('/api/persons', (request, response, next) => {
     })
 
     person
-    .save()
-    .then(result => {
-        console.log('Person added!')
-        response.status(200).json(result)
-    })
-    .catch(error => {
-        next(error)
-    })
+        .save()
+        .then(result => {
+            console.log('Person added!')
+            response.status(200).json(result)
+        })
+        .catch(error => {
+            next(error)
+        })
 
 })
 
 app.put('/api/persons/:id', (request, response, next) => {
     const id = request.params.id
     const {name, number} = request.body
-    
-    Person
-    .findById(id)
-    .then(person => {
-        if (!person) {
-            console.log('Person not found')
-            response.status(404).end()
-        } else {
-            person.name = name
-            person.number = number
 
-            return person.save().then(updatedPerson => {
-                response.json(updatedPerson)
-            })
-        }
-    })
-    .catch(error => next(error))
+    Person
+        .findById(id)
+        .then(person => {
+            if (!person) {
+                console.log('Person not found')
+                response.status(404).end()
+            } else {
+                person.name = name
+                person.number = number
+
+                return person.save().then(updatedPerson => {
+                    response.json(updatedPerson)
+                })
+            }
+        })
+        .catch(error => next(error))
 })
 
 // app.post route contains conditional that we can move to the data validation?
@@ -124,5 +125,5 @@ app.use(errorHandler)
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {
-    console.log("Server is up an running, Baby! Listening on PORT:", PORT)
+    console.log('Server is up an running, Baby! Listening on PORT:', PORT)
 })

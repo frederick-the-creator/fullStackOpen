@@ -1,17 +1,17 @@
 const mongoose = require('mongoose')
 const url = process.env.MONGO_DB_URL
-console.log("Mongoose URL:", url)
+console.log('Mongoose URL:', url)
 mongoose.set('strictQuery',false)
 mongoose.connect(url)
-    .then(result => {
+    .then(() => {
         console.log('Connected to MongoDB')
     })
     .catch(error => {
         console.log('error connecting to MongoDB:', error.message)
     })
 function validator (val) {
-  const regex = /[0-9]{2,3}-[0-9]*/
-  return regex.test(val)
+    const regex = /[0-9]{2,3}-[0-9]*/
+    return regex.test(val)
 }
 const personSchema = new mongoose.Schema({
     name: {

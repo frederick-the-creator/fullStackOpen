@@ -1,8 +1,8 @@
 const mongoose = require('mongoose')
 
 if (process.argv.length < 3) {
-  console.log('give password as argument')
-  process.exit(1)
+    console.log('give password as argument')
+    process.exit(1)
 }
 
 // Fetches the password from the terminal command when you run 'node mongo.js yourPassword'
@@ -14,7 +14,7 @@ const [,,password, name, number ] = process.argv
 // const number = process.argv[4]
 
 const url = `mongodb+srv://hellofredlewis:${password}@cluster0.zlwz79c.mongodb.net/phonebookApp?retryWrites=true&w=majority&appName=Cluster0`
-            
+
 mongoose.set('strictQuery',false)
 
 mongoose.connect(url)
@@ -28,21 +28,21 @@ const Person = mongoose.model('Person', personSchema)
 
 if (!name && !number) {
     Person
-    .find({})
-    .then(result => {
-        result.forEach(person => {
-            console.log(person)
+        .find({})
+        .then(result => {
+            result.forEach(person => {
+                console.log(person)
+            })
+            mongoose.connection.close()
         })
-        mongoose.connection.close()
-    })
 } else {
     const person = new Person({
-    name: name,
-    number: number
+        name: name,
+        number: number
     })
 
-    person.save().then(result => {
-    console.log(`added ${name} number ${number} to phonebook`)
-    mongoose.connection.close()
+    person.save().then(() => {
+        console.log(`added ${name} number ${number} to phonebook`)
+        mongoose.connection.close()
     })
 }
