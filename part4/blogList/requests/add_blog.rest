@@ -1,0 +1,9 @@
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+
+{
+    "title": "The niceties of a Flat White",
+    "author": "Arthur Bojangles",
+    "url": "https://Nice_Fat_Whites.com",
+    "likes": "4"
+}
