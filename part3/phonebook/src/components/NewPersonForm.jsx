@@ -53,6 +53,11 @@ const NewPersonForm = ({persons, setPersons, setMessage}) => {
         setMessage({text:`Success! ${newPerson.name} added`, sentiment:'positive'})
         setTimeout(() => {setMessage({text:'', sentiment:''})}, 5000)
       })
+      .catch(error => {
+        console.log('Catch block triggered')
+        console.log(error.response.data.error)
+        setMessage({text: error.response.data.error, sentiment:'negative'})
+      })
     }
 
     
