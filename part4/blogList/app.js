@@ -1,11 +1,19 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const blogRouter = require('./controllers/blog')
+const config = require('./utils/config')
 
 const app = express()
 
-const mongoUrl = "mongodb+srv://blogListUser:LfLHC8mTjzmIURnc@cluster0.zlwz79c.mongodb.net/blogListApp?retryWrites=true&w=majority&appName=Cluster0"
-mongoose.connect(mongoUrl)
+console.log('Mongoos URI: ',config.mongoUrl)
+
+mongoose.connect(config.mongoUrl)
+    .then(() => {
+        console.log('Mongo DB connection successfully established')
+    })
+    .catch((error) => {
+        console.log('Error:', error.message)
+    })
 
 app.use(express.json())
 app.use('/api/blogs', blogRouter)
