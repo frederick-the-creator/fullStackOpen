@@ -4,8 +4,8 @@ const supertest = require('supertest')
 const app = require('../app')
 const helper = require('./helper')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 const mongoose = require('mongoose')
-const { start } = require('node:repl')
 
 const api = supertest(app)
 
@@ -14,6 +14,14 @@ beforeEach(async () => {
     try {
         await Blog.deleteMany({})
         await Blog.insertMany(helper.initialBlogs)
+    } catch (error) {
+        console.log('Error in beforeEach', error.message)
+        throw error
+    }
+
+    try {
+        await User.deleteMany({})
+        await User.insertMany(helper.initialUsers)
     } catch (error) {
         console.log('Error in beforeEach', error.message)
         throw error
@@ -49,13 +57,13 @@ describe('POST requests', async () => {
             url: "https://fredslife.com/",
             likes: 100,
         }
-        await api
+        const result = await api
             .post('/api/blogs')
             .send(newBlog)
             .expect(201)
+
         const finalBlogs = await helper.retrieveAllBlogs()
         assert.strictEqual(finalBlogs.length, startBlogs.length + 1)
-        // console.log(finalBlogs)
 
         const titles = finalBlogs.map(blog => blog.title)
 
@@ -143,6 +151,47 @@ describe('PUT requests', async () => {
 
         assert.strictEqual(finalUpdatedBlog.likes, 130)
         
+    })
+})
+
+describe('Blog and User referencing', async () => {
+    test('Add new blog and return all blogs with the user details', async () => {
+
+        const newBlog =   {
+            title: "Fred's secret life of cooombs",
+            author: "Michael Chan",
+            url: "https://fredslife.com/",
+            likes: 100,
+        }
+
+        await api
+            .post('/api/blogs')
+            .send(newBlog)
+            .expect(201)
+        
+        await api
+            .get('/api/blogs')
+            .expect(200)
+    })
+    test('Add new blog and fetch users to display blog info', async () => {
+        const newBlog =   {
+            title: "Fred's secret life of cooombs",
+            author: "Michael Chan",
+            url: "https://fredslife.com/",
+            likes: 100,
+        }
+
+        await api
+            .post('/api/blogs')
+            .send(newBlog)
+            .expect(201)
+        
+        const result = await api
+            .get('/api/users')
+            .expect(200)
+
+
+        assert.strictEqual(result.body[0].blogs.title, newBlog.title)
     })
 })
 
