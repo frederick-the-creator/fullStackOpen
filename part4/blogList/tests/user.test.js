@@ -6,11 +6,22 @@ const helper = require('./helper')
 const User = require('../models/user')
 const mongoose = require('mongoose')
 const api = supertest(app)
+const bcrypt = require('bcrypt')
 
 
 beforeEach(async () => {
     await User.deleteMany({})
-    await User.insertMany(helper.initialUsers)
+
+    const passwordHash = await bcrypt.hash('Ping', 10)
+    const user = {
+      _id: "5a422a851b54a676234d17b4",
+      username: "frederickl1",
+      name: "Fred",
+      passwordHash: passwordHash,
+      __v: 0
+    }
+
+    await User.insertOne(user)
 })
 
 
@@ -25,7 +36,7 @@ describe('POST', async () => {
         }
 
         await api
-            .post('/api/users')
+            .post('/api/users/registration')
             .send(newUser)
             .expect(201)
         
@@ -43,7 +54,7 @@ describe('POST', async () => {
         }
 
         await api
-            .post('/api/users')
+            .post('/api/users/registration')
             .send(newUser)
             .expect(400)
     })
@@ -56,7 +67,7 @@ describe('POST', async () => {
         }
 
         await api
-            .post('/api/users')
+            .post('/api/users/registration')
             .send(newUser)
             .expect(400)
     })
@@ -70,11 +81,24 @@ describe('POST', async () => {
         }
 
         await api
-            .post('/api/users')
+            .post('/api/users/registration')
             .send(newUser)
             .expect(400)
     })
-    test('new user without username')
+    test('User login', async () => {
+
+        const user = {
+            username: 'frederickl1',
+            password: 'Ping'
+        }
+
+        const result = await api
+            .post('/api/users/login')
+            .send(user)
+            .expect(200)
+
+
+    })
     test('new user non-unique')
 })
 

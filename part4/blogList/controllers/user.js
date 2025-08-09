@@ -1,6 +1,7 @@
 const userRouter = require('express').Router()
 const User = require('../models/user')
 const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
 
 userRouter.get('', async (request, response, next) => {
     const result = await User
@@ -9,7 +10,8 @@ userRouter.get('', async (request, response, next) => {
     response.status(200).json(result)
 })
 
-userRouter.post('', async (request, response, next) => {
+userRouter.post('/registration', async (request, response, next) => {
+    // Route for user registration
 
     // Error hanlding username and password must be present and > 3 long - status code and error message
     // Test invalid user creation
@@ -41,6 +43,28 @@ userRouter.post('', async (request, response, next) => {
         console.log('error', error.message)
         next(error)
     }
+
+})
+
+userRouter.post('/login', async (request, response, next) => {
+
+    const { username, password } = request.body
+
+    const user = await User.findOne({username})
+
+    const passwordCorrect = await bcrypt.compare(password, user.passwordHash)
+
+    if (!passwordCorrect) {
+        return response.status(401).end()
+    }
+
+    userToken = user.toJSON()
+
+    const token = jwt.sign(userToken, process.env.SECRET)
+
+    response
+    .status(200)
+    .send({ token , ...userToken})
 
 })
 
