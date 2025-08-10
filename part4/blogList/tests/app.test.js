@@ -6,6 +6,7 @@ const helper = require('./helper')
 const Blog = require('../models/blog')
 const User = require('../models/user')
 const mongoose = require('mongoose')
+const bcrypt = require('bcrypt')
 
 const api = supertest(app)
 
@@ -21,7 +22,15 @@ beforeEach(async () => {
 
     try {
         await User.deleteMany({})
-        await User.insertMany(helper.initialUsers)
+        const passwordHash = await bcrypt.hash('Ping', 10)
+        const user = {
+            _id: "5a422a851b54a676234d17b4",
+            username: "frederickl1",
+            name: "Fred",
+            passwordHash: passwordHash,
+            __v: 0
+        }
+        await User.insertOne(user)
     } catch (error) {
         console.log('Error in beforeEach', error.message)
         throw error
@@ -48,17 +57,49 @@ describe('GET requests', async () => {
     })
 })
 
+const userLogin = async (valid) => {
+
+    const pass = (valid === 'yes')
+        ? 'Ping'
+        : 'Pong'
+
+    // Login
+    const user = {
+        username: 'frederickl1',
+        password: pass
+    }
+
+    const loginResult = await api
+        .post('/api/users/login')
+        .send(user)
+        .expect(200)
+
+    const token = loginResult.body.token
+
+    return token
+
+}
+
 describe('POST requests', async () => {
     test('create new blog', async () => {
+
+        const token = await userLogin('yes')
+
+        // Create blog object
         const startBlogs = await helper.retrieveAllBlogs()
+
         const newBlog =   {
             title: "Fred's secret life of cooombs",
             author: "Michael Chan",
             url: "https://fredslife.com/",
             likes: 100,
         }
+
+        // Send request
+
         const result = await api
             .post('/api/blogs')
+            .set("Authorization", `Bearer ${token}`)
             .send(newBlog)
             .expect(201)
 
@@ -72,6 +113,8 @@ describe('POST requests', async () => {
     })
     test('missing likes property', async () => {
 
+        const token = await userLogin('yes')
+
         const newBlog =   {
             title: "Missing Likes",
             author: "Michael Chan",
@@ -80,6 +123,7 @@ describe('POST requests', async () => {
 
         await api
             .post('/api/blogs')
+            .set('Authorization', `Bearer ${token}`)
             .send(newBlog)
             .expect(201)
 
@@ -92,6 +136,9 @@ describe('POST requests', async () => {
 
     })
     test('missing title property', async () => {
+
+        const token = await userLogin('yes')
+        
         const newBlog = {
             author: "Michael Chan",
             url: "https://fredslife.com/",
@@ -99,11 +146,15 @@ describe('POST requests', async () => {
 
         await api
             .post('/api/blogs')
+            .set('Authorization' ,`Bearer ${token}`)
             .send(newBlog)
             .expect(400)
         
     })
     test('missing url property', async () => {
+
+        const token = await userLogin('yes')
+
         const newBlog =   {
             title: "Missing Likes",
             author: "Michael Chan",
@@ -111,6 +162,7 @@ describe('POST requests', async () => {
 
         await api
             .post('/api/blogs')
+            .set('Authorization' ,`Bearer ${token}`)
             .send(newBlog)
             .expect(400)
         
@@ -157,6 +209,8 @@ describe('PUT requests', async () => {
 describe('Blog and User referencing', async () => {
     test('Add new blog and return all blogs with the user details', async () => {
 
+        const token = await userLogin('yes')
+
         const newBlog =   {
             title: "Fred's secret life of cooombs",
             author: "Michael Chan",
@@ -166,14 +220,19 @@ describe('Blog and User referencing', async () => {
 
         await api
             .post('/api/blogs')
+            .set('Authorization', `Bearer ${token}`)
             .send(newBlog)
             .expect(201)
         
         await api
             .get('/api/blogs')
             .expect(200)
+
     })
     test('Add new blog and fetch users to display blog info', async () => {
+
+        const token = await userLogin('yes')
+
         const newBlog =   {
             title: "Fred's secret life of cooombs",
             author: "Michael Chan",
@@ -183,6 +242,7 @@ describe('Blog and User referencing', async () => {
 
         await api
             .post('/api/blogs')
+            .set('Authorization', `Bearer ${token}`)
             .send(newBlog)
             .expect(201)
         

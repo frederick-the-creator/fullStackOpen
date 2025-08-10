@@ -1,6 +1,7 @@
 const blogRouter = require('express').Router()
 const Blog = require('../models/blog')
 const User = require('../models/user')
+const jwt = require('jsonwebtoken')
 
 blogRouter.get('', async (request, response) => {
   const blogs = await Blog
@@ -10,6 +11,15 @@ blogRouter.get('', async (request, response) => {
 })
 
 blogRouter.post('', async (request, response) => {
+
+  // Retrieve token from body and validate
+  const authorisation = request.headers['authorization'].replace('Bearer ','')
+
+  const validation = jwt.verify(authorisation, process.env.SECRET)
+
+  if (!validation) {
+    response.status(401).json({error:'Invalid token'})
+  }
 
   if (!request.body.likes) {
     request.body.likes = 0
