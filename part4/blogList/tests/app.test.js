@@ -72,7 +72,6 @@ const userLogin = async (valid) => {
     const loginResult = await api
         .post('/api/users/login')
         .send(user)
-        .expect(200)
 
     const token = loginResult.body.token
 
@@ -81,9 +80,40 @@ const userLogin = async (valid) => {
 }
 
 describe('POST requests', async () => {
-    test('create new blog', async () => {
+    test('create new blog authorised', async () => {
 
         const token = await userLogin('yes')
+
+        // Create blog object
+        const startBlogs = await helper.retrieveAllBlogs()
+
+        const newBlog =   {
+            title: "Fred's secret life of cooombs",
+            author: "Michael Chan",
+            url: "https://fredslife.com/",
+            likes: 100,
+        }
+
+        // Send request
+        console.log('token: ', token)
+        const result = await api
+            .post('/api/blogs')
+            .set("Authorization", `Bearer ${token}`)
+            .send(newBlog)
+            .expect(201)
+
+        const finalBlogs = await helper.retrieveAllBlogs()
+        assert.strictEqual(finalBlogs.length, startBlogs.length + 1)
+
+        const titles = finalBlogs.map(blog => blog.title)
+
+        assert(titles.includes("Fred's secret life of cooombs"))
+
+    })
+    test('create new blog unauthorised', async () => {
+
+
+        const token = 'abcd'
 
         // Create blog object
         const startBlogs = await helper.retrieveAllBlogs()
@@ -101,14 +131,30 @@ describe('POST requests', async () => {
             .post('/api/blogs')
             .set("Authorization", `Bearer ${token}`)
             .send(newBlog)
+            .expect(401)
+        
+        console.log('error body',result.body)
+
+
+    })
+    test('token middleware testing', async () => {
+        
+        const token = await userLogin('yes')
+
+        const newBlog =   {
+            title: "Fred's secret life of cooombs",
+            author: "Michael Chan",
+            url: "https://fredslife.com/",
+            likes: 100,
+        }
+
+        // Send request
+
+        const result = await api
+            .post('/api/blogs')
+            .set("Authorization", `Bearer ${token}`)
+            .send(newBlog)
             .expect(201)
-
-        const finalBlogs = await helper.retrieveAllBlogs()
-        assert.strictEqual(finalBlogs.length, startBlogs.length + 1)
-
-        const titles = finalBlogs.map(blog => blog.title)
-
-        assert(titles.includes("Fred's secret life of cooombs"))
 
     })
     test('missing likes property', async () => {
