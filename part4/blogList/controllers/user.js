@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
 userRouter.get('', async (request, response, next) => {
+    console.log('Get route hit')
     const result = await User
         .find({})
         .populate('blogs')
@@ -48,9 +49,13 @@ userRouter.post('/registration', async (request, response, next) => {
 
 userRouter.post('/login', async (request, response, next) => {
 
-    const { username, password } = request.body
+    console.log('Backend Login route hit')
+    const { userName, password } = request.body
+    console.log('username', userName)
+    console.log('password', password)
 
-    const user = await User.findOne({username})
+    const user = await User.findOne({username:userName}).exec()
+    console.log('user', user)
 
     const passwordCorrect = await bcrypt.compare(password, user.passwordHash)
 

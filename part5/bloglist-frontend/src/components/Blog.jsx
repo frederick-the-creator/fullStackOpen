@@ -1,0 +1,52 @@
+import { useState, useEffect } from 'react'
+import blogService from '../services/blogs'
+
+const Blog = ({ blog, user, blogs, setBlogs, addLike }) => {
+    const [hideToggle, setHideToggle] = useState(true)
+    const [blogDetails, setBlogDetails] = useState(blog)
+
+    const visibility = { display: hideToggle===false ? '' : 'none' }
+    const blogStyle = {
+        paddingTop: 10,
+        paddingLeft: 2,
+        border: 'solid',
+        borderWidth: 1,
+        marginBottom: 5
+    }
+
+    const handleToggle = () => {
+        setHideToggle(!hideToggle)
+    }
+
+    const deleteBlog = () => {
+        window.confirm(`Are you sure you want to delete ${blogDetails.name}`)
+        try {
+            blogService.deleteBlog(blogDetails)
+            const newBlogs = blogs.filter(blog => blog.id!==blogDetails.id)
+            setBlogs(newBlogs)
+        } catch (error) {
+            console.log('error', error)
+        }
+    }
+
+    return (
+        <div style={blogStyle}>
+            {blogDetails.title} ({blogDetails.author})
+            <button onClick={() => handleToggle()}>View</button>
+            <div style={visibility} className="urlLikes">
+                <div>{blogDetails.url}</div>
+                <div>
+                    likes {blogDetails.likes}
+                    <button onClick={addLike}>Like</button>
+                </div>
+                <div>
+                    {user.id===blogDetails.user.id &&
+                        <button onClick={deleteBlog}>Delete</button>
+                    }
+                </div>
+            </div>
+        </div>
+    )
+}
+
+export default Blog

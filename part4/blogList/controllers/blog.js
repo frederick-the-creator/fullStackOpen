@@ -15,6 +15,7 @@ blogRouter.post('', async (request, response) => {
 
   const validation = jwt.verify(request.token, process.env.SECRET)
 
+
   if (!request.body.likes) {
     request.body.likes = 0
   }
@@ -24,8 +25,9 @@ blogRouter.post('', async (request, response) => {
   }
 
   // Create blog
-  const users = await User.find({})
-  const user = users[0]
+  const user = await User.findById(validation.id)
+
+
   newBlog = {
     ...request.body,
     user: user._id
@@ -39,6 +41,7 @@ blogRouter.post('', async (request, response) => {
 })
 
 blogRouter.delete('/:id', async (request, response, next) => {
+  console.log('delete route hit')
   try {
     await Blog.findByIdAndDelete(request.params.id)
     response.status(204).end()
@@ -50,7 +53,9 @@ blogRouter.delete('/:id', async (request, response, next) => {
 
 blogRouter.put('/:id', async (request, response, next) => {
   try {
-    const result = await Blog.findByIdAndUpdate('5a422a851b54a676234d17f7', request.body, {new:true})
+    console.log('request', request)
+    const result = await Blog.findByIdAndUpdate(request.params.id, request.body, {new:true})
+    console.log('result', result)
     response.status(200).json(result)
   } catch (error) {
     next(error)

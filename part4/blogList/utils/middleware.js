@@ -11,8 +11,6 @@ const errorHandler = (error, request, response, next) => {
 
 const getTokenFromRequest = (request, response, next) => {
 
-    console.log('token in middle', request.headers['authorization'])
-
     if (request.headers['authorization']) {
         const token = request.headers['authorization'].replace('Bearer ', '')
         request.token = token
