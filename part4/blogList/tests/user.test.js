@@ -88,7 +88,7 @@ describe('POST', async () => {
     test('User login', async () => {
 
         const user = {
-            username: 'frederickl1',
+            userName: 'frederickl1',
             password: 'Ping'
         }
 

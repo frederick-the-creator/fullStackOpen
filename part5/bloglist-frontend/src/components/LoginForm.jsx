@@ -47,7 +47,7 @@ const LoginForm = ({ user, setUser, setToken, setNotificationMessage, setNotific
 
     return (
         <div>
-            {user===null ?
+            {Object.keys(user).length === 0 ?
                 <div>
                     <h2>User Login</h2>
                     <form onSubmit={submitLogin}>
@@ -74,7 +74,6 @@ const LoginForm = ({ user, setUser, setToken, setNotificationMessage, setNotific
 }
 
 LoginForm.propTypes = {
-    user: PropTypes.object.isRequired,
     setUser: PropTypes.func.isRequired,
     setToken: PropTypes.func.isRequired,
     setNotificationMessage: PropTypes.func.isRequired,

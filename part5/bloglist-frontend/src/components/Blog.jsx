@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import blogService from '../services/blogs'
 
-const Blog = ({ blog, user, blogs, setBlogs, addLike }) => {
+const Blog = ({ blog, user, blogs, setBlogs }) => {
     const [hideToggle, setHideToggle] = useState(true)
     const [blogDetails, setBlogDetails] = useState(blog)
 
@@ -29,13 +29,26 @@ const Blog = ({ blog, user, blogs, setBlogs, addLike }) => {
         }
     }
 
+    const addLike = () => {
+        const newBlog = {
+            ...blogDetails,
+            likes: blogDetails.likes + 1
+        }
+        blogService.addLikesService(newBlog)
+        setBlogDetails(newBlog)
+    }
+
+    console.log('user id', user.id)
+    console.log('blog details', blogDetails)
+    console.log('blog details user id', blogDetails.user.id)
+    
     return (
-        <div style={blogStyle}>
+        <div style={blogStyle} className='blog'>
             {blogDetails.title} ({blogDetails.author})
             <button onClick={() => handleToggle()}>View</button>
             <div style={visibility} className="urlLikes">
                 <div>{blogDetails.url}</div>
-                <div>
+                <div className="likes">
                     likes {blogDetails.likes}
                     <button onClick={addLike}>Like</button>
                 </div>

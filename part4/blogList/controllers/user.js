@@ -12,11 +12,13 @@ userRouter.get('', async (request, response, next) => {
 })
 
 userRouter.post('/registration', async (request, response, next) => {
+    console.log('User Registration route hit')
     // Route for user registration
 
     // Error hanlding username and password must be present and > 3 long - status code and error message
     // Test invalid user creation
 
+    console.log(request.body)
     if (!request.body.username || !request.body.password) {
         return response.status(400).send({error: 'username or password missing'})
     }
@@ -49,13 +51,11 @@ userRouter.post('/registration', async (request, response, next) => {
 
 userRouter.post('/login', async (request, response, next) => {
 
-    console.log('Backend Login route hit')
+
     const { userName, password } = request.body
-    console.log('username', userName)
-    console.log('password', password)
+
 
     const user = await User.findOne({username:userName}).exec()
-    console.log('user', user)
 
     const passwordCorrect = await bcrypt.compare(password, user.passwordHash)
 
@@ -66,6 +66,8 @@ userRouter.post('/login', async (request, response, next) => {
     userToken = user.toJSON()
 
     const token = jwt.sign(userToken, process.env.SECRET)
+
+    console.log('toke', token)
 
     response
     .status(200)

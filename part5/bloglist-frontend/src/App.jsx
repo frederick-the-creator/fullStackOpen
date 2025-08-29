@@ -9,7 +9,7 @@ import Togglable from './components/Togglable'
 
 const App = () => {
     const [blogs, setBlogs] = useState([])
-    const [user, setUser] = useState(null)
+    const [user, setUser] = useState({})
     const [notificationMesssage, setNotificationMessage] = useState('')
     const [notificationSentiment, setNotificationSentiment] = useState('')
 
@@ -20,6 +20,7 @@ const App = () => {
             setBlogs( blogs )
         )
         const storedUser = window.localStorage.getItem('loggedInUser')
+        // console.log('stored user', storedUser)
         if (storedUser) {
             setUser(JSON.parse(storedUser))
             blogService.setToken(JSON.parse(storedUser).token)
@@ -27,10 +28,14 @@ const App = () => {
 
     }, [])
 
+    // console.log('blogs in state', blogs)
+
     const addBlog = async (newBlog) => {
         try {
             console.dir(newBlog, { depth:null })
             const savedBlog = await blogService.create(newBlog)
+            savedBlog.user = {id:savedBlog.user}
+            // console.log('savedBlog', savedBlog)
             setBlogs(blogs.concat(savedBlog))
             setNotificationMessage('Blog successfully added')
             setNotificationSentiment('positive')
@@ -60,7 +65,7 @@ const App = () => {
                 setNotificationMessage={setNotificationMessage}
                 setNotificationSentiment={setNotificationSentiment}
             />
-            {user!==null &&
+            {Object.keys(user).length !== 0 &&
                 <div>
                     <Togglable ref={blogRef}>
                         <BlogForm createBlog={addBlog}/>

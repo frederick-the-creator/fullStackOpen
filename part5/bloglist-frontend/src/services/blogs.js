@@ -27,7 +27,7 @@ const create = (newBlog) => {
     return request.then(response => response.data)
 }
 
-const addLike = (updatedBlog) => {
+const addLikesService = (updatedBlog) => {
     const request = axios.put(
         `${baseUrl}/${updatedBlog.id}`,
         updatedBlog
@@ -43,4 +43,4 @@ const deleteBlog = (blog) => {
     return request.then(response => response.data)
 }
 
-export default { getAll, create, setToken, addLike, deleteBlog }
+export default { getAll, create, setToken, addLikesService, deleteBlog }

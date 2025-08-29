@@ -2,20 +2,15 @@ import Blog from './Blog'
 
 const BlogList = ({ blogs, setBlogs, user }) => {
 
-    const addLike = () => {
-        const newBlog = {
-            ...blogDetails,
-            likes: blogDetails.likes + 1
-        }
-        blogService.addLike(newBlog)
-        setBlogDetails(newBlog)
-    }
+    // console.log('blogs pre-sort', blogs)
+    blogs.sort((a,b) => b.likes - a.likes)
+    // console.log('blogs post-sort', blogs)
 
     return (
         <div>
             <h2>blogs</h2>
             {blogs.map(blog =>
-                <Blog key={blog.id} blog={blog} user={user} blogs={blogs} setBlogs={setBlogs} addLike={addLike}/>
+                <Blog key={blog.id} blog={blog} user={user} blogs={blogs} setBlogs={setBlogs}/>
             )}
         </div>
     )

@@ -65,7 +65,7 @@ const userLogin = async (valid) => {
 
     // Login
     const user = {
-        username: 'frederickl1',
+        userName: 'frederickl1',
         password: pass
     }
 

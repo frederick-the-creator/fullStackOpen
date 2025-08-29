@@ -12,9 +12,7 @@ blogRouter.get('', async (request, response) => {
 
 blogRouter.post('', async (request, response) => {
 
-
   const validation = jwt.verify(request.token, process.env.SECRET)
-
 
   if (!request.body.likes) {
     request.body.likes = 0
@@ -35,6 +33,8 @@ blogRouter.post('', async (request, response) => {
   const blog = new Blog(newBlog)
   const result = await blog.save()
 
+  console.log('Mongoose result of saving new blog', result)
+
   await User.findByIdAndUpdate(user._id, { blogs: result._id }, { new:true } )
 
   response.status(201).json(result)
@@ -53,7 +53,7 @@ blogRouter.delete('/:id', async (request, response, next) => {
 
 blogRouter.put('/:id', async (request, response, next) => {
   try {
-    console.log('request', request)
+    request.body.user = request.body.user.id
     const result = await Blog.findByIdAndUpdate(request.params.id, request.body, {new:true})
     console.log('result', result)
     response.status(200).json(result)
